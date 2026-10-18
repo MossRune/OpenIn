@@ -12,9 +12,15 @@ impl RuleMatcher {
             return None;
         }
 
-        if let Some(pattern) = trimmed.strip_prefix("s$").or_else(|| trimmed.strip_prefix("s:")) {
+        if let Some(pattern) = trimmed
+            .strip_prefix("s$")
+            .or_else(|| trimmed.strip_prefix("s:"))
+        {
             Some(RoutingRule::Exact(pattern.trim().to_string()))
-        } else if let Some(pattern) = trimmed.strip_prefix("d$").or_else(|| trimmed.strip_prefix("d:")) {
+        } else if let Some(pattern) = trimmed
+            .strip_prefix("d$")
+            .or_else(|| trimmed.strip_prefix("d:"))
+        {
             let pat = pattern.trim();
             if let Some(sub) = pat.strip_prefix("*.") {
                 Some(RoutingRule::Domain {
@@ -27,7 +33,10 @@ impl RuleMatcher {
                     allow_subdomains: false,
                 })
             }
-        } else if let Some(pattern) = trimmed.strip_prefix("r$").or_else(|| trimmed.strip_prefix("r:")) {
+        } else if let Some(pattern) = trimmed
+            .strip_prefix("r$")
+            .or_else(|| trimmed.strip_prefix("r:"))
+        {
             let pat = pattern.trim();
             if pat.len() > Self::MAX_REGEX_LEN {
                 return None;
@@ -54,7 +63,10 @@ impl RuleMatcher {
     pub fn matches(rule: &RoutingRule, url: &ValidatedUrl) -> bool {
         match rule {
             RoutingRule::Exact(exact) => exact.trim() == url.canonical.trim(),
-            RoutingRule::Domain { domain, allow_subdomains } => {
+            RoutingRule::Domain {
+                domain,
+                allow_subdomains,
+            } => {
                 if let Some(host) = &url.host {
                     let host_lower = host.to_lowercase();
                     if &host_lower == domain {

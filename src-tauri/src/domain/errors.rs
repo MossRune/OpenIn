@@ -8,7 +8,9 @@ pub enum ValidationError {
     #[error("Input contains null bytes or disallowed control characters")]
     IllegalCharacters,
 
-    #[error("Input begins with a CLI flag prefix ('-' or '--'), rejected to prevent argument injection")]
+    #[error(
+        "Input begins with a CLI flag prefix ('-' or '--'), rejected to prevent argument injection"
+    )]
     ArgumentInjectionAttempt,
 
     #[error("URL parsing failure: {0}")]

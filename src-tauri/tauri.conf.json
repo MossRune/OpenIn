@@ -36,5 +36,13 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQzMkUxMkFGOTQyNUIzMzUKUldRMXN5V1VyeEl1UTEyUkVxN0h4cWRBUlMvZ3pKcXZiUC9IYzcwbTVvSzI4dmxFWFUzajhydDYK",
+      "endpoints": [
+        "https://github.com/MossRune/OpenIn/releases/latest/download/latest.json"
+      ]
+    }
   }
 }

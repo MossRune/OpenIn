@@ -17,10 +17,8 @@ fn test_arg_preparation_url_substitution() {
 
 #[test]
 fn test_arg_preparation_default_append() {
-    let args = LaunchService::prepare_arguments(
-        Some("--new-window --private"),
-        "https://example.com",
-    );
+    let args =
+        LaunchService::prepare_arguments(Some("--new-window --private"), "https://example.com");
     assert_eq!(
         args,
         vec!["--new-window", "--private", "https://example.com"]
@@ -52,7 +50,9 @@ fn test_alternate_launch_profile() {
     let err = service.launch(&browser, "https://example.com", Some("missing_profile"));
     assert_eq!(
         err,
-        Err(LaunchError::AlternateProfileNotFound("missing_profile".into()))
+        Err(LaunchError::AlternateProfileNotFound(
+            "missing_profile".into()
+        ))
     );
 }
 

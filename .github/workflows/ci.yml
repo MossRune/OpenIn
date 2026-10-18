@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lint-and-format:
     name: Lint & Format Check
@@ -69,11 +72,11 @@ jobs:
         with:
           workspaces: "src-tauri -> src-tauri/target"
 
-      - name: Install Linux dependencies
+      - name: Install Linux build dependencies
         if: matrix.platform == 'ubuntu-latest'
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev
 
-      - name: Run Test Suite
-        run: cargo test --manifest-path src-tauri/Cargo.toml --verbose
+      - name: Run Tests
+        run: cargo test --manifest-path src-tauri/Cargo.toml

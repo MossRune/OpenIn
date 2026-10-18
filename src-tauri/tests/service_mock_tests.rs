@@ -1,7 +1,5 @@
 use open_in_lib::application::{DiscoveryService, LaunchService, SettingsService};
-use open_in_lib::domain::{
-    BrowserTarget, Configuration, LaunchError, Preferences, SettingsError,
-};
+use open_in_lib::domain::{BrowserTarget, Configuration, LaunchError, Preferences, SettingsError};
 use open_in_lib::infrastructure::traits::{ProcessRunner, SettingsStore};
 use open_in_lib::platform::traits::BrowserDiscoverer;
 use std::sync::{Arc, Mutex};
@@ -95,10 +93,7 @@ fn test_launch_service_with_injected_runner() {
     let invocations = mock_runner.invocations.lock().unwrap();
     assert_eq!(invocations.len(), 1);
     assert_eq!(invocations[0].0, "/usr/bin/firefox");
-    assert_eq!(
-        invocations[0].1,
-        vec!["--new-tab", "https://openin.dev"]
-    );
+    assert_eq!(invocations[0].1, vec!["--new-tab", "https://openin.dev"]);
 }
 
 #[test]

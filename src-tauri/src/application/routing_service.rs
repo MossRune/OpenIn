@@ -1,6 +1,7 @@
 use crate::domain::matcher::RuleMatcher;
 use crate::domain::models::{RouteDecision, RuleSet, ValidatedUrl};
 
+#[derive(Default)]
 pub struct RoutingService;
 
 impl RoutingService {

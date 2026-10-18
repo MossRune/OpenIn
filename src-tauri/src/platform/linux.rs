@@ -5,6 +5,7 @@ use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
+#[derive(Default)]
 pub struct XdgBrowserDiscoverer;
 
 impl XdgBrowserDiscoverer {

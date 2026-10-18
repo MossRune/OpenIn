@@ -6,9 +6,8 @@ pub struct UrlSanitizer;
 
 impl UrlSanitizer {
     /// Allowed URL schemes for external links
-    const ALLOWED_SCHEMES: &'static [&'static str] = &[
-        "http", "https", "ftp", "gemini", "gopher", "mailto"
-    ];
+    const ALLOWED_SCHEMES: &'static [&'static str] =
+        &["http", "https", "ftp", "gemini", "gopher", "mailto"];
 
     /// Registered application URI prefixes that can wrap actual URLs
     const STRIPPABLE_PREFIXES: &'static [&'static str] = &[
@@ -38,18 +37,17 @@ impl UrlSanitizer {
 
         // Strip surrounding matching single or double quotes
         let mut stripped = trimmed;
-        if (stripped.starts_with('"') && stripped.ends_with('"'))
-            || (stripped.starts_with('\'') && stripped.ends_with('\''))
+        if ((stripped.starts_with('"') && stripped.ends_with('"'))
+            || (stripped.starts_with('\'') && stripped.ends_with('\'')))
+            && stripped.len() >= 2
         {
-            if stripped.len() >= 2 {
-                stripped = &stripped[1..stripped.len() - 1].trim();
-            }
+            stripped = stripped[1..stripped.len() - 1].trim();
         }
 
         // Unwrap application-specific deep-link prefixes
         for prefix in Self::STRIPPABLE_PREFIXES {
             if stripped.to_ascii_lowercase().starts_with(prefix) {
-                stripped = &stripped[prefix.len()..].trim();
+                stripped = stripped[prefix.len()..].trim();
                 break;
             }
         }
@@ -83,7 +81,9 @@ impl UrlSanitizer {
         let host = parsed.host_str().map(|h| h.to_lowercase());
 
         // Network schemes require a non-empty host
-        if (scheme == "http" || scheme == "https" || scheme == "ftp" || scheme == "gemini") && host.is_none() {
+        if (scheme == "http" || scheme == "https" || scheme == "ftp" || scheme == "gemini")
+            && host.is_none()
+        {
             return Err(ValidationError::MissingHost(parsed.to_string()));
         }
 

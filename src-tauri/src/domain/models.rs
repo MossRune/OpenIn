@@ -31,7 +31,10 @@ pub struct ValidatedUrl {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum RoutingRule {
     Exact(String),
-    Domain { domain: String, allow_subdomains: bool },
+    Domain {
+        domain: String,
+        allow_subdomains: bool,
+    },
     Regex(String),
 }
 

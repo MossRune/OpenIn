@@ -44,7 +44,8 @@ impl SettingsStore for FileSettingsStore {
             return Ok(default_config);
         }
 
-        let content = fs::read_to_string(&self.path).map_err(|e| SettingsError::Io(e.to_string()))?;
+        let content =
+            fs::read_to_string(&self.path).map_err(|e| SettingsError::Io(e.to_string()))?;
         match serde_json::from_str::<Configuration>(&content) {
             Ok(config) => Ok(config),
             Err(e) => {
@@ -69,7 +70,8 @@ impl SettingsStore for FileSettingsStore {
         let temp_path = self.path.with_extension("tmp");
 
         {
-            let mut file = File::create(&temp_path).map_err(|e| SettingsError::Io(e.to_string()))?;
+            let mut file =
+                File::create(&temp_path).map_err(|e| SettingsError::Io(e.to_string()))?;
             file.write_all(serialized.as_bytes())
                 .map_err(|e| SettingsError::Io(e.to_string()))?;
             file.sync_all()

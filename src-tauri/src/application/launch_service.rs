@@ -118,7 +118,8 @@ mod tests {
 
     #[test]
     fn test_prepare_arguments() {
-        let args = LaunchService::prepare_arguments(Some("--private-window %URL%"), "https://example.com");
+        let args =
+            LaunchService::prepare_arguments(Some("--private-window %URL%"), "https://example.com");
         assert_eq!(args, vec!["--private-window", "https://example.com"]);
 
         let args_default = LaunchService::prepare_arguments(None, "https://example.com");

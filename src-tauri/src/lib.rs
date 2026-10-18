@@ -19,7 +19,8 @@ pub struct AppState {
 
 pub fn run() {
     // Composition Root: assemble infrastructure, adapters, and application services
-    let store = Arc::new(FileSettingsStore::new().expect("Failed to initialize file settings store"));
+    let store =
+        Arc::new(FileSettingsStore::new().expect("Failed to initialize file settings store"));
     let runner = Arc::new(NativeProcessRunner::new());
     let discoverer = create_default_discoverer();
 

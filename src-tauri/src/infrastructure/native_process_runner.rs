@@ -3,11 +3,22 @@ use crate::infrastructure::traits::ProcessRunner;
 use std::path::Path;
 use std::process::Command;
 
+#[derive(Default)]
 pub struct NativeProcessRunner;
 
 impl NativeProcessRunner {
     const DISALLOWED_BINARIES: &'static [&'static str] = &[
-        "sh", "bash", "zsh", "dash", "csh", "tcsh", "cmd.exe", "powershell.exe", "pwsh.exe", "wscript.exe", "cscript.exe"
+        "sh",
+        "bash",
+        "zsh",
+        "dash",
+        "csh",
+        "tcsh",
+        "cmd.exe",
+        "powershell.exe",
+        "pwsh.exe",
+        "wscript.exe",
+        "cscript.exe",
     ];
 
     pub fn new() -> Self {
