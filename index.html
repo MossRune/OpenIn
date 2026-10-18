@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OpenIn</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app" class="app-container">
+      <!-- Chooser View -->
+      <main id="chooser-view" class="view active" role="main">
+        <header class="app-header">
+          <div class="url-bar-container">
+            <span class="url-icon" aria-hidden="true">🌐</span>
+            <input
+              type="text"
+              id="url-input"
+              class="url-input"
+              placeholder="Paste or enter URL..."
+              spellcheck="false"
+              autocomplete="off"
+            />
+            <button id="btn-copy-url" class="btn-icon" title="Copy URL (C)">📋</button>
+            <button id="btn-open-settings" class="btn-icon" title="Settings (,)">⚙️</button>
+          </div>
+        </header>
+
+        <section class="browser-section" aria-label="Available Browsers">
+          <div id="browser-grid" class="browser-grid" role="listbox">
+            <!-- Dynamic Browser Items -->
+          </div>
+        </section>
+
+        <footer class="app-footer">
+          <div class="shortcut-hints">
+            <span><kbd>1-9</kbd> Launch</span>
+            <span><kbd>↑↓←→</kbd> Navigate</span>
+            <span><kbd>↵</kbd> Open</span>
+            <span><kbd>Esc</kbd> Close</span>
+          </div>
+          <div id="status-toast" class="status-toast" aria-live="polite"></div>
+        </footer>
+      </main>
+
+      <!-- Settings View -->
+      <section id="settings-view" class="view" aria-label="Settings" hidden>
+        <header class="settings-header">
+          <h2>Settings</h2>
+          <button id="btn-close-settings" class="btn-secondary">Done</button>
+        </header>
+
+        <div class="settings-body">
+          <nav class="settings-tabs">
+            <button class="tab-btn active" data-tab="tab-browsers">Browsers</button>
+            <button class="tab-btn" data-tab="tab-rules">Rules</button>
+            <button class="tab-btn" data-tab="tab-preferences">Preferences</button>
+          </nav>
+
+          <div class="tab-content active" id="tab-browsers">
+            <div class="tab-actions">
+              <button id="btn-refresh-browsers" class="btn-secondary">Scan System Browsers</button>
+            </div>
+            <div id="settings-browser-list" class="browser-config-list"></div>
+          </div>
+
+          <div class="tab-content" id="tab-rules">
+            <div class="tab-actions">
+              <button id="btn-add-rule" class="btn-primary">+ Add Ruleset</button>
+            </div>
+            <div id="settings-rules-list" class="rules-config-list"></div>
+          </div>
+
+          <div class="tab-content" id="tab-preferences">
+            <div class="pref-group">
+              <label class="toggle-control">
+                <input type="checkbox" id="pref-rule-matching" checked />
+                <span>Enable automatic URL rule routing</span>
+              </label>
+              <label class="toggle-control">
+                <input type="checkbox" id="pref-close-after-launch" checked />
+                <span>Dismiss window after launching link</span>
+              </label>
+              <label class="toggle-control">
+                <input type="checkbox" id="pref-minimize-on-blur" checked />
+                <span>Minimize when focus is lost</span>
+              </label>
+            </div>
+            <div class="pref-group">
+              <label for="pref-theme">Appearance Theme</label>
+              <select id="pref-theme" class="select-control">
+                <option value="auto">System Default</option>
+                <option value="dark">Dark</option>
+                <option value="light">Light</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

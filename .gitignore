@@ -1,0 +1,40 @@
+# Rust / Cargo target directory
+target/
+src-tauri/target/
+**/*.rs.bk
+Cargo.lock
+
+# Node / Bun dependencies & build outputs
+node_modules/
+dist/
+.vite/
+bun.lockb
+bun.lock
+
+# Tauri build artifacts & bundles
+src-tauri/WixTools/
+src-tauri/gen/
+
+# Environment files & local credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+
+# Operating System & IDE artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.antigravity-ide/
+.zed/
+
+# Temporary / Scratch files
+*.tmp
+*.bak
+*.swp
+*~

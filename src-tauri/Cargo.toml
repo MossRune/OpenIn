@@ -1,0 +1,36 @@
+[package]
+name = "open-in"
+version = "0.1.0"
+description = "A fast, secure, cross-platform link chooser and browser router"
+authors = ["MossRune", "OpenIn Contributors"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/MossRune/OpenIn"
+default-run = "open-in"
+
+[lib]
+name = "open_in_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+url = "2.5"
+regex = "1.10"
+thiserror = "1.0"
+dirs = "5.0"
+
+[[bin]]
+name = "open-in"
+path = "src/main.rs"
+
+[[bin]]
+name = "open-in-nmh"
+path = "src/bin/native_messaging_host.rs"
+
+[dev-dependencies]
+tempfile = "3.10"
