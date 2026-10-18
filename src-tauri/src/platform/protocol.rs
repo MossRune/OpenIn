@@ -114,6 +114,7 @@ impl ProtocolService {
 
     // --- Linux implementation ---
 
+    #[allow(dead_code)]
     fn get_linux_mimeapps_path() -> Option<PathBuf> {
         if let Ok(config_home) = std::env::var("XDG_CONFIG_HOME") {
             let path = PathBuf::from(config_home).join("mimeapps.list");
@@ -122,6 +123,7 @@ impl ProtocolService {
         dirs::home_dir().map(|h| h.join(".config/mimeapps.list"))
     }
 
+    #[allow(dead_code)]
     fn check_status_linux() -> HandlerStatus {
         let mut current_handler = None;
         let mut is_default = false;
@@ -220,6 +222,7 @@ impl ProtocolService {
         }
     }
 
+    #[allow(dead_code)]
     fn register_linux() -> RegistrationResult {
         // Step 1: Ensure openin.desktop exists in user applications directory
         let apps_dir = match dirs::data_local_dir() {
@@ -311,6 +314,7 @@ StartupWMClass=openin\n",
         }
     }
 
+    #[allow(dead_code)]
     pub fn update_mimeapps_list(path: &Path, desktop_filename: &str) -> std::io::Result<()> {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
