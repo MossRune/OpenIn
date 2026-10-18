@@ -4,15 +4,292 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>OpenIn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
+    <!-- Subtle ambient background glow -->
+    <div class="ambient-glow" aria-hidden="true"></div>
+
     <div id="app" class="app-container">
-      <!-- Chooser View -->
+      <!-- 1. FIRST-RUN ONBOARDING FLOW -->
+      <section id="onboarding-view" class="view" aria-label="First Run Setup" hidden>
+        <div class="wizard-card">
+          <!-- Wizard Header -->
+          <div class="wizard-header">
+            <div class="brand-badge">
+              <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+              <span>OpenIn Setup</span>
+            </div>
+            <!-- Step Indicator -->
+            <div class="step-indicator" id="step-dots" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="5">
+              <span class="step-dot active" data-step="1" title="Welcome"></span>
+              <span class="step-dot" data-step="2" title="Browser Discovery"></span>
+              <span class="step-dot" data-step="3" title="Link Handling"></span>
+              <span class="step-dot" data-step="4" title="Browser Preferences"></span>
+              <span class="step-dot" data-step="5" title="Review & Finish"></span>
+            </div>
+          </div>
+
+          <!-- Wizard Body (Dynamic Step Containers) -->
+          <div class="wizard-body">
+            <!-- Step 1: Welcome -->
+            <div class="wizard-step active" id="wizard-step-1">
+              <div class="step-hero">
+                <div class="hero-icon-wrapper">
+                  <svg class="hero-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </div>
+                <h2>Welcome to OpenIn</h2>
+                <p class="step-description">
+                  A lightning-fast, privacy-first link router that lets you choose which browser or profile opens any web link.
+                </p>
+              </div>
+
+              <div class="feature-pills">
+                <div class="pill-item">
+                  <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                  </svg>
+                  <div>
+                    <strong>Instant Routing</strong>
+                    <span>Open links with 1-9 hotkeys or automated domain rules</span>
+                  </div>
+                </div>
+                <div class="pill-item">
+                  <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect width="18" height="18" x="3" y="3" rx="2" />
+                    <path d="M3 9h18" />
+                    <path d="M9 21V9" />
+                  </svg>
+                  <div>
+                    <strong>Multi-Profile Support</strong>
+                    <span>Separate work, personal, and incognito sessions</span>
+                  </div>
+                </div>
+                <div class="pill-item">
+                  <svg class="pill-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                  </svg>
+                  <div>
+                    <strong>Zero Telemetry</strong>
+                    <span>Runs 100% locally on your machine with Rust native safety</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: Browser Discovery -->
+            <div class="wizard-step" id="wizard-step-2">
+              <div class="step-header">
+                <h3>Installed Browsers</h3>
+                <p class="step-description">
+                  OpenIn scans your system dynamically for web browsers. Review discovered browsers below.
+                </p>
+              </div>
+
+              <div class="step-action-bar">
+                <span id="onboarding-browser-count" class="badge-subtle">Detecting...</span>
+                <button id="btn-onboarding-rescan" class="btn-secondary btn-sm">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                    <path d="M16 21h5v-5" />
+                  </svg>
+                  Refresh Scan
+                </button>
+              </div>
+
+              <div id="onboarding-browser-list" class="browser-checklist">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Step 3: Link Handling Configuration -->
+            <div class="wizard-step" id="wizard-step-3">
+              <div class="step-header">
+                <h3>Configure Link Handling</h3>
+                <p class="step-description">
+                  To intercept links clicked in chat apps, terminals, or documents, OpenIn must be registered as your system's default handler for HTTP and HTTPS URLs.
+                </p>
+              </div>
+
+              <div class="status-card" id="handler-status-card">
+                <div class="status-card-header">
+                  <div class="status-indicator-group">
+                    <span class="status-bullet" id="handler-status-bullet"></span>
+                    <span class="status-title" id="handler-status-title">Checking OS registration...</span>
+                  </div>
+                  <span class="badge" id="handler-status-badge">Verifying</span>
+                </div>
+                <p class="status-detail" id="handler-status-detail">
+                  Querying desktop protocol associations...
+                </p>
+              </div>
+
+              <div class="handler-actions">
+                <button id="btn-register-handler" class="btn-primary">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                  Register as Default Browser
+                </button>
+                <button id="btn-open-os-settings" class="btn-secondary">
+                  <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                    <polyline points="15 3 21 3 21 9" />
+                    <line x1="10" y1="14" x2="21" y2="3" />
+                  </svg>
+                  Open OS Settings
+                </button>
+                <button id="btn-reverify-handler" class="btn-ghost btn-sm">
+                  Verify Again
+                </button>
+              </div>
+
+              <p class="verification-note">
+                <strong>Note:</strong> OpenIn verifies actual operating system configuration and never assumes registration succeeded without confirmation.
+              </p>
+            </div>
+
+            <!-- Step 4: Browser Selection Preferences -->
+            <div class="wizard-step" id="wizard-step-4">
+              <div class="step-header">
+                <h3>Default Launch Behavior</h3>
+                <p class="step-description">
+                  Choose how OpenIn behaves when a clicked link doesn't match an automated routing rule.
+                </p>
+              </div>
+
+              <div class="selection-options">
+                <label class="radio-card" for="opt-always-ask">
+                  <input type="radio" name="fallback_opt" id="opt-always-ask" value="always_ask" checked />
+                  <div class="radio-content">
+                    <div class="radio-title-row">
+                      <strong>Always Show Chooser (Recommended)</strong>
+                      <span class="badge-subtle">Default HUD</span>
+                    </div>
+                    <p class="radio-desc">Display the lightweight browser picker window every time you open an unrouted link.</p>
+                  </div>
+                </label>
+
+                <label class="radio-card" for="opt-preferred-fallback">
+                  <input type="radio" name="fallback_opt" id="opt-preferred-fallback" value="open_preferred" />
+                  <div class="radio-content">
+                    <div class="radio-title-row">
+                      <strong>Direct to Preferred Browser</strong>
+                    </div>
+                    <p class="radio-desc">Immediately launch your primary browser without prompt, unless an automated rule redirects it.</p>
+                    <div class="preferred-select-wrapper" id="preferred-select-container">
+                      <select id="onboarding-preferred-browser" class="select-control">
+                        <!-- Populated with discovered browsers -->
+                      </select>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Step 5: Finish & Verification -->
+            <div class="wizard-step" id="wizard-step-5">
+              <div class="step-header">
+                <h3>Ready to Launch</h3>
+                <p class="step-description">
+                  Review your initial setup and run a live routing simulation to verify configuration.
+                </p>
+              </div>
+
+              <div class="summary-grid">
+                <div class="summary-item">
+                  <span class="summary-label">Default Link Handler</span>
+                  <span class="summary-value" id="summary-handler-status">Checking...</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Discovered Browsers</span>
+                  <span class="summary-value" id="summary-browser-count">0</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Fallback Behavior</span>
+                  <span class="summary-value" id="summary-fallback-mode">Always Prompt</span>
+                </div>
+                <div class="summary-item">
+                  <span class="summary-label">Rules Configured</span>
+                  <span class="summary-value" id="summary-rules-count">0</span>
+                </div>
+              </div>
+
+              <!-- Functional Test Simulator -->
+              <div class="simulation-card">
+                <div class="simulation-header">
+                  <span class="simulation-title">Test Link Routing</span>
+                  <button id="btn-run-simulation" class="btn-secondary btn-sm">
+                    Simulate Test URL
+                  </button>
+                </div>
+                <div class="simulation-input-row">
+                  <input type="text" id="simulation-test-url" class="input-control" value="https://github.com/MossRune/OpenIn" />
+                </div>
+                <div id="simulation-result" class="simulation-result" aria-live="polite">
+                  Click "Simulate Test URL" to test routing engine against current settings.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wizard Footer Nav -->
+          <div class="wizard-footer">
+            <button id="btn-wizard-back" class="btn-secondary" disabled>
+              Back
+            </button>
+            <div class="wizard-footer-right">
+              <button id="btn-wizard-next" class="btn-primary">
+                <span>Continue</span>
+                <kbd class="kbd-subtle">↵</kbd>
+              </button>
+              <button id="btn-wizard-finish" class="btn-primary" hidden>
+                <span>Launch OpenIn</span>
+                <kbd class="kbd-subtle">↵</kbd>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. MAIN CHOOSER VIEW (Desktop HUD) -->
       <main id="chooser-view" class="view active" role="main">
+        <!-- Optional Protocol Warning Banner (Shown if OS registration lost) -->
+        <div id="handler-alert-banner" class="alert-banner" hidden>
+          <div class="alert-content">
+            <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>OpenIn is not registered as your default link handler.</span>
+          </div>
+          <button id="btn-fix-handler" class="btn-alert-action">Configure</button>
+        </div>
+
         <header class="app-header">
           <div class="url-bar-container">
-            <span class="url-icon" aria-hidden="true">🌐</span>
+            <div class="url-icon-wrapper" aria-hidden="true">
+              <svg class="icon icon-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+                <path d="M2 12h20" />
+              </svg>
+            </div>
             <input
               type="text"
               id="url-input"
@@ -21,82 +298,270 @@
               spellcheck="false"
               autocomplete="off"
             />
-            <button id="btn-copy-url" class="btn-icon" title="Copy URL (C)">📋</button>
-            <button id="btn-open-settings" class="btn-icon" title="Settings (,)">⚙️</button>
+            <div class="url-actions">
+              <button id="btn-copy-url" class="btn-icon" title="Copy clean link (C)" aria-label="Copy URL">
+                <svg class="icon icon-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                  <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                </svg>
+              </button>
+              <button id="btn-open-settings" class="btn-icon" title="Preferences (,)" aria-label="Settings">
+                <svg class="icon icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
           </div>
         </header>
 
         <section class="browser-section" aria-label="Available Browsers">
           <div id="browser-grid" class="browser-grid" role="listbox">
-            <!-- Dynamic Browser Items -->
+            <!-- Dynamic Browser Items with Glass Cards -->
           </div>
         </section>
 
         <footer class="app-footer">
           <div class="shortcut-hints">
-            <span><kbd>1-9</kbd> Launch</span>
-            <span><kbd>↑↓←→</kbd> Navigate</span>
-            <span><kbd>↵</kbd> Open</span>
-            <span><kbd>Esc</kbd> Close</span>
+            <span class="hint-item"><kbd>1-9</kbd> Launch</span>
+            <span class="hint-item"><kbd>↑↓←→</kbd> Select</span>
+            <span class="hint-item"><kbd>↵</kbd> Open</span>
+            <span class="hint-item"><kbd>Esc</kbd> Dismiss</span>
           </div>
           <div id="status-toast" class="status-toast" aria-live="polite"></div>
         </footer>
       </main>
 
-      <!-- Settings View -->
+      <!-- 3. SETTINGS VIEW (Full Preferences Sheet) -->
       <section id="settings-view" class="view" aria-label="Settings" hidden>
         <header class="settings-header">
-          <h2>Settings</h2>
-          <button id="btn-close-settings" class="btn-secondary">Done</button>
+          <div class="settings-title-group">
+            <h2>Preferences</h2>
+            <p class="settings-subtitle">Manage default browser handler, target browsers, and rules</p>
+          </div>
+          <button id="btn-close-settings" class="btn-primary-ghost">
+            <span>Done</span>
+            <kbd class="kbd-subtle">Esc</kbd>
+          </button>
         </header>
 
         <div class="settings-body">
-          <nav class="settings-tabs">
-            <button class="tab-btn active" data-tab="tab-browsers">Browsers</button>
-            <button class="tab-btn" data-tab="tab-rules">Rules</button>
-            <button class="tab-btn" data-tab="tab-preferences">Preferences</button>
+          <nav class="settings-tabs" role="tablist">
+            <button class="tab-btn active" data-tab="tab-general" role="tab" aria-selected="true">
+              <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              General
+            </button>
+            <button class="tab-btn" data-tab="tab-browsers" role="tab" aria-selected="false">
+              <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M3 9h18" />
+                <path d="M9 21V9" />
+              </svg>
+              Browsers
+            </button>
+            <button class="tab-btn" data-tab="tab-rules" role="tab" aria-selected="false">
+              <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m4.93 4.93 4.24 4.24" />
+                <path d="m14.83 9.17 4.24-4.24" />
+                <path d="m14.83 14.83 4.24 4.24" />
+                <path d="m9.17 14.83-4.24 4.24" />
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+              Rules
+            </button>
+            <button class="tab-btn" data-tab="tab-about" role="tab" aria-selected="false">
+              <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+              About
+            </button>
           </nav>
 
-          <div class="tab-content active" id="tab-browsers">
+          <!-- Tab: General -->
+          <div class="tab-content active" id="tab-general">
+            <!-- OS Default Handler Card -->
+            <div class="pref-card">
+              <div class="pref-card-header">
+                <h3>Default Web Browser Status</h3>
+                <span id="settings-handler-badge" class="badge">Checking</span>
+              </div>
+              <p class="pref-card-desc" id="settings-handler-desc">
+                Checking default application status...
+              </p>
+              <div class="pref-card-actions">
+                <button id="btn-settings-register-handler" class="btn-secondary btn-sm">
+                  Register as Default
+                </button>
+                <button id="btn-settings-open-os" class="btn-ghost btn-sm">
+                  System Settings
+                </button>
+                <button id="btn-settings-refresh-handler" class="btn-ghost btn-sm">
+                  Re-check
+                </button>
+              </div>
+            </div>
+
+            <!-- Behavior -->
+            <div class="pref-card">
+              <div class="pref-card-header">
+                <h3>Behavior & Automation</h3>
+              </div>
+              <div class="pref-rows">
+                <label class="toggle-row" for="pref-rule-matching">
+                  <div class="toggle-label-group">
+                    <span class="toggle-title">URL Pattern Routing</span>
+                    <span class="toggle-desc">Automatically route matched links to specified browser targets</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="pref-rule-matching" checked />
+                    <span class="switch-slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="pref-close-after-launch">
+                  <div class="toggle-label-group">
+                    <span class="toggle-title">Dismiss After Launch</span>
+                    <span class="toggle-desc">Automatically close OpenIn window once a browser starts</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="pref-close-after-launch" checked />
+                    <span class="switch-slider"></span>
+                  </div>
+                </label>
+
+                <label class="toggle-row" for="pref-minimize-on-blur">
+                  <div class="toggle-label-group">
+                    <span class="toggle-title">Dismiss On Focus Loss</span>
+                    <span class="toggle-desc">Hide the prompt when clicking away to another application</span>
+                  </div>
+                  <div class="switch">
+                    <input type="checkbox" id="pref-minimize-on-blur" checked />
+                    <span class="switch-slider"></span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Appearance -->
+            <div class="pref-card">
+              <div class="pref-card-header">
+                <h3>Appearance</h3>
+              </div>
+              <div class="pref-row-select">
+                <div class="toggle-label-group">
+                  <span class="toggle-title">Theme Palette</span>
+                  <span class="toggle-desc">Select dark glass, bright glass, or sync with operating system</span>
+                </div>
+                <div class="select-wrapper">
+                  <select id="pref-theme" class="select-control">
+                    <option value="auto">System Sync</option>
+                    <option value="dark">Dark Glass (Default)</option>
+                    <option value="light">Light Glass</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Browsers -->
+          <div class="tab-content" id="tab-browsers">
             <div class="tab-actions">
-              <button id="btn-refresh-browsers" class="btn-secondary">Scan System Browsers</button>
+              <span class="tab-count-label">Configured Browser Targets</span>
+              <button id="btn-refresh-browsers" class="btn-action">
+                <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                  <path d="M3 3v5h5" />
+                  <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+                  <path d="M16 21h5v-5" />
+                </svg>
+                Scan System
+              </button>
             </div>
             <div id="settings-browser-list" class="browser-config-list"></div>
           </div>
 
+          <!-- Tab: Rules -->
           <div class="tab-content" id="tab-rules">
             <div class="tab-actions">
-              <button id="btn-add-rule" class="btn-primary">+ Add Ruleset</button>
+              <span class="tab-count-label">Domain Routing Rules</span>
+              <button id="btn-open-add-rule-modal" class="btn-action btn-action-primary">
+                <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14" />
+                  <path d="M5 12h14" />
+                </svg>
+                Add Rule
+              </button>
             </div>
             <div id="settings-rules-list" class="rules-config-list"></div>
           </div>
 
-          <div class="tab-content" id="tab-preferences">
-            <div class="pref-group">
-              <label class="toggle-control">
-                <input type="checkbox" id="pref-rule-matching" checked />
-                <span>Enable automatic URL rule routing</span>
-              </label>
-              <label class="toggle-control">
-                <input type="checkbox" id="pref-close-after-launch" checked />
-                <span>Dismiss window after launching link</span>
-              </label>
-              <label class="toggle-control">
-                <input type="checkbox" id="pref-minimize-on-blur" checked />
-                <span>Minimize when focus is lost</span>
-              </label>
-            </div>
-            <div class="pref-group">
-              <label for="pref-theme">Appearance Theme</label>
-              <select id="pref-theme" class="select-control">
-                <option value="auto">System Default</option>
-                <option value="dark">Dark</option>
-                <option value="light">Light</option>
-              </select>
+          <!-- Tab: About -->
+          <div class="tab-content" id="tab-about">
+            <div class="pref-card">
+              <div class="pref-card-header">
+                <h3>OpenIn Application</h3>
+                <span class="badge-subtle">v0.1.0</span>
+              </div>
+              <p class="pref-card-desc">
+                High-performance link router and browser chooser built with Rust and Tauri 2.
+              </p>
+              <div class="pref-rows">
+                <div class="toggle-row">
+                  <div class="toggle-label-group">
+                    <span class="toggle-title">First-Run Setup</span>
+                    <span class="toggle-desc">Reopen the initial onboarding wizard to reconfigure defaults</span>
+                  </div>
+                  <button id="btn-rerun-onboarding" class="btn-secondary btn-sm">
+                    Re-run Setup Wizard
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- 4. ADD RULE MODAL (Dialog) -->
+      <div id="rule-modal" class="modal-backdrop" hidden>
+        <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-rule-title">
+          <div class="modal-header">
+            <h3 id="modal-rule-title">New Routing Rule</h3>
+            <button id="btn-close-rule-modal" class="btn-icon" aria-label="Close dialog">
+              <svg class="icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="rule-name-input">Rule Name</label>
+              <input type="text" id="rule-name-input" class="input-control" placeholder="e.g. Work GitHub" />
+            </div>
+            <div class="form-group">
+              <label for="rule-pattern-input">Domain or Pattern</label>
+              <input type="text" id="rule-pattern-input" class="input-control" placeholder="e.g. *.github.com or google.com" />
+              <span class="form-hint">Supports wildcards (*.domain.com), exact URLs, or regex</span>
+            </div>
+            <div class="form-group">
+              <label for="rule-target-select">Target Browser</label>
+              <select id="rule-target-select" class="select-control">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btn-cancel-rule" class="btn-secondary">Cancel</button>
+            <button id="btn-save-rule" class="btn-primary">Save Rule</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

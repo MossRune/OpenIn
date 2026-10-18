@@ -1,8 +1,10 @@
 pub mod linux;
 pub mod macos;
+pub mod protocol;
 pub mod traits;
 pub mod windows;
 
+pub use protocol::{HandlerStatus, ProtocolService, RegistrationResult};
 pub use traits::BrowserDiscoverer;
 
 use crate::domain::models::BrowserTarget;
@@ -32,5 +34,17 @@ pub struct Platform;
 impl Platform {
     pub fn discover_installed_browsers() -> Vec<BrowserTarget> {
         create_default_discoverer().discover()
+    }
+
+    pub fn check_handler_status() -> HandlerStatus {
+        ProtocolService::check_status()
+    }
+
+    pub fn register_as_default_handler() -> RegistrationResult {
+        ProtocolService::register_as_default()
+    }
+
+    pub fn open_system_settings() -> Result<(), String> {
+        ProtocolService::open_system_settings()
     }
 }

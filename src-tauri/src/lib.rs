@@ -50,6 +50,13 @@ pub fn run() {
         .manage(app_state)
         .invoke_handler(tauri::generate_handler![
             commands::get_bootstrap_data,
+            commands::get_default_handler_status,
+            commands::register_default_handler,
+            commands::open_os_protocol_settings,
+            commands::save_onboarding_step,
+            commands::complete_onboarding,
+            commands::reset_onboarding,
+            commands::test_route_simulation,
             commands::sanitize_url,
             commands::test_rule,
             commands::save_settings,
