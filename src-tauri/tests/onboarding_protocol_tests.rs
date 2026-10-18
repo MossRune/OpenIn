@@ -2,7 +2,7 @@ use open_in_lib::application::{RoutingService, SettingsService};
 use open_in_lib::domain::models::{BrowserTarget, Configuration, RuleSet};
 use open_in_lib::domain::UrlSanitizer;
 use open_in_lib::infrastructure::FileSettingsStore;
-use open_in_lib::platform::{HandlerStatus, ProtocolService};
+use open_in_lib::platform::HandlerStatus;
 use std::fs;
 use std::sync::Arc;
 use tempfile::tempdir;
@@ -54,20 +54,29 @@ fn test_onboarding_state_persistence_and_resumption() {
     assert_eq!(final_config.preferences.fallback_behavior, "open_preferred");
 }
 
+#[cfg(target_os = "linux")]
 #[test]
 fn test_mimeapps_list_protocol_handling() {
     let dir = tempdir().unwrap();
     let mime_path = dir.path().join("mimeapps.list");
 
     // Fresh file creation
-    ProtocolService::update_mimeapps_list(&mime_path, "openin.desktop").unwrap();
+    open_in_lib::platform::linux::LinuxProtocolHandler::update_mimeapps_list(
+        &mime_path,
+        "openin.desktop",
+    )
+    .unwrap();
     let content = fs::read_to_string(&mime_path).unwrap();
     assert!(content.contains("[Default Applications]"));
     assert!(content.contains("x-scheme-handler/http=openin.desktop"));
     assert!(content.contains("x-scheme-handler/https=openin.desktop"));
 
     // Updating existing file with prior registrations
-    ProtocolService::update_mimeapps_list(&mime_path, "openin.desktop").unwrap();
+    open_in_lib::platform::linux::LinuxProtocolHandler::update_mimeapps_list(
+        &mime_path,
+        "openin.desktop",
+    )
+    .unwrap();
     let content_updated = fs::read_to_string(&mime_path).unwrap();
     // Must not have duplicate lines
     let http_count = content_updated
